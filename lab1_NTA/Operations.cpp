@@ -1,9 +1,9 @@
 #include "header.h"
 
-int gcd(int a, int b) {
+uint64_t gcd(uint64_t a, uint64_t b) {
 	while (b != 0) { // a = q*b + r
-		int q = a / b;
-		int r = a % b;
+		uint64_t q = a / b;
+		uint64_t r = a % b;
 
 		a = b;
 		b = r;
@@ -12,19 +12,19 @@ int gcd(int a, int b) {
 	return a;
 }
 
-int gcd_uv(int a, int b, int& u, int& v) {
-	int u0 = 1, u1 = 0;
-	int v0 = 0, v1 = 1;
+uint64_t gcd_uv(uint64_t a, uint64_t b, int64_t& u, int64_t& v) {
+	int64_t u0 = 1, u1 = 0;
+	int64_t v0 = 0, v1 = 1;
 
 	while (b != 0) { // a = q*b + r
-		int q = a / b;
-		int r = a % b;
+		uint64_t q = a / b;
+		uint64_t r = a % b;
 
 		a = b;
 		b = r;
 
-		int u_n = u0 - q * u1;
-		int v_n = v0 - q * v1;
+		int64_t u_n = u0 - q * u1;
+		int64_t v_n = v0 - q * v1;
 
 		u0 = u1;
 		u1 = u_n;
@@ -39,8 +39,8 @@ int gcd_uv(int a, int b, int& u, int& v) {
 	return a;
 }
 
-int inverse(int a, int n) {
-	int u, v;
+int64_t inverse(uint64_t a, uint64_t n) {
+	int64_t u, v;
 
 	if (gcd_uv(a, n, u, v) != 1) {
 		//cout << "Error: Inverse element is not found";
@@ -50,8 +50,8 @@ int inverse(int a, int n) {
 	return (u % n + n) % n;
 }
 
-int step(int a, int b) {
-	int c = a;
+uint64_t step(uint64_t a, uint64_t b) {
+	uint64_t c = a;
 
 	for (int i = 0; i < b - 1; i++) {
 		c *= a;
@@ -60,14 +60,18 @@ int step(int a, int b) {
 	return c;
 }
 
-int mod(int a, int b) {
-	int c = ((a % b) + b) % b;
+uint64_t mod(uint64_t a, uint64_t b) {
+	uint64_t c = ((a % b) + b) % b;
 	return c;
 }
 
-int mod_step(int a, int b, int n) {
+uint64_t mod_step(uint64_t a, uint64_t b, uint64_t n) {
 
-	int c = mod(step(a, b), n);
+	uint64_t c = 1;
 
+	for (int i = 0; i < b; i++) {
+		c = mod(c * a, n);
+	}
+	
 	return c;
 }
