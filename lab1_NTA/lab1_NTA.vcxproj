@@ -127,6 +127,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Brilhart.cpp" />
+    <ClCompile Include="function_Brilhart.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MillerRabin.cpp" />
     <ClCompile Include="Operations.cpp" />
