@@ -14,6 +14,7 @@ int Legendre(uint64_t a, uint64_t p) {
     return 1;
 }
 
+// Примітивна перевірка на простоту
 bool IsPrime(uint64_t p) {
     if (p < 2) 
         return false;
@@ -31,7 +32,9 @@ bool IsPrime(uint64_t p) {
     return true;
 }
 
+// Побудова факторної бази
 vector<uint64_t> BuildFactorBase(uint64_t n, uint64_t B_max) {
+
     vector<uint64_t> base;
     base.push_back(static_cast<uint64_t>(-1));
 
@@ -43,3 +46,4 @@ vector<uint64_t> BuildFactorBase(uint64_t n, uint64_t B_max) {
 
     return base;
 }
+
