@@ -115,3 +115,59 @@ void ContinuedFraction(uint64_t n, const vector<uint64_t>& factorBase,
         }
     }
 }
+
+// Пошук вектора розкладу
+vector<int> SolveGF2(vector<vector<int>>& matrix, int numCols) {
+    int numRows = matrix.size();
+
+    vector<vector<int>> aug(numRows, vector<int>(numCols + numRows, 0));
+    for (int i = 0; i < numRows; i++) {
+        for (int j = 0; j < numCols; j++) {
+            aug[i][j] = matrix[i][j];
+        }
+        aug[i][numCols + i] = 1;
+    }
+
+    int row = 0;
+    for (int col = 0; col < numCols && row < numRows; col++) {
+
+        int pivot = -1;
+        for (int i = row; i < numRows; i++) {
+            if (aug[i][col] == 1) {
+                pivot = i;
+                break;
+            }
+        }
+        if (pivot == -1) continue;
+
+        swap(aug[row], aug[pivot]);
+
+        for (int i = 0; i < numRows; i++) {
+            if (i != row && aug[i][col] == 1) {
+                for (int j = 0; j < numCols + numRows; j++) {
+                    aug[i][j] ^= aug[row][j];
+                }
+            }
+        }
+        row++;
+    }
+
+    for (int i = 0; i < numRows; i++) {
+        bool isZero = true;
+        for (int j = 0; j < numCols; j++) {
+            if (aug[i][j] != 0) {
+                isZero = false;
+                break;
+            }
+        }
+        if (isZero) {
+            vector<int> solution(numRows);
+            for (int j = 0; j < numRows; j++) {
+                solution[j] = aug[i][numCols + j];
+            }
+            return solution;
+        }
+    }
+
+    return {};
+}
