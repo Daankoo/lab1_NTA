@@ -30,21 +30,26 @@ uint64_t step2(uint64_t p, uint64_t& d, uint64_t& s) {
 	}
 
 	d = p_1;
+
+	return s, d;
 }
 
 bool TestSPP(uint64_t p, uint64_t a, uint64_t d, uint64_t s) {
 	uint64_t a_mod = mod_step(a, d, p);
 
-	if (a_mod == 1) {
+	if (a_mod == 1 || a_mod == p - 1) {
 		return 1;
 	}
 
-	for (uint64_t r = 0; r < s; ++r) {
+	for (uint64_t r = 0; r < s - 1; ++r) {
 
 		a_mod = mod_step(a_mod, 2, p);
 		
 		if (a_mod == p - 1) {
 			return 1;
+		}
+		if (a_mod == 1) {
+			return 0;
 		}
 	}
 
