@@ -16,16 +16,15 @@ uint64_t TrialDivision(uint64_t n) {
 uint64_t PollardRho(uint64_t n) {
     uint64_t x0 = 2; 
 
-    while (true) {
+    while (x0 < n) {
         uint64_t x = x0;
         uint64_t y = x0;
         uint64_t d = 1;
 
         while (d == 1) {
-            x = (mod_step(x, 2, n) + 1) % n;
-
-            y = (mod_step(y, 2, n) + 1) % n;
-            y = (mod_step(y, 2, n) + 1) % n;
+            x = (mul_mod(x, x, n) + 1) % n;
+            y = (mul_mod(y, y, n) + 1) % n;
+            y = (mul_mod(y, y, n) + 1) % n;
 
             uint64_t diff = x > y ? x - y : y - x;
             d = gcd(diff, n); 
@@ -37,4 +36,6 @@ uint64_t PollardRho(uint64_t n) {
 
         x0++;
     }
+
+    return 0;
 }

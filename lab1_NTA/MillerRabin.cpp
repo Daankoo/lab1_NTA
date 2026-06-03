@@ -19,7 +19,7 @@
 //	}
 //}
 
-uint64_t step2(uint64_t p, uint64_t& d, uint64_t& s) {
+void step2(uint64_t p, uint64_t& d, uint64_t& s) {
 	d = 1;
 	s = 0;
 	uint64_t p_1 = p - 1;
@@ -30,8 +30,6 @@ uint64_t step2(uint64_t p, uint64_t& d, uint64_t& s) {
 	}
 
 	d = p_1;
-
-	return s, d;
 }
 
 bool TestSPP(uint64_t p, uint64_t a, uint64_t d, uint64_t s) {
@@ -43,7 +41,7 @@ bool TestSPP(uint64_t p, uint64_t a, uint64_t d, uint64_t s) {
 
 	for (uint64_t r = 0; r < s - 1; ++r) {
 
-		a_mod = mod_step(a_mod, 2, p);
+		a_mod = mul_mod(a_mod, a_mod, p);
 		
 		if (a_mod == p - 1) {
 			return 1;
