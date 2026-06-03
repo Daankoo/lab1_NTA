@@ -50,16 +50,6 @@ int64_t inverse(uint64_t a, uint64_t n) {
 	return (u % n + n) % n;
 }
 
-uint64_t step(uint64_t a, uint64_t b) {
-	uint64_t c = a;
-
-	for (int i = 0; i < b - 1; i++) {
-		c *= a;
-	}
-
-	return c;
-}
-
 uint64_t mod(uint64_t a, uint64_t b) {
 	uint64_t c = ((a % b) + b) % b;
 	return c;
