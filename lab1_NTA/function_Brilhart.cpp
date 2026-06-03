@@ -47,3 +47,23 @@ vector<uint64_t> BuildFactorBase(uint64_t n, uint64_t B_max) {
     return base;
 }
 
+// Перевірка на гладкість
+bool IsSmooth(uint64_t m, const vector<uint64_t>& factorBase, vector<int>& exponents) {
+    exponents.assign(factorBase.size(), 0);
+
+    for (int i = 1; i < factorBase.size(); i++) {
+        while (m % factorBase[i] == 0) {
+            m = m / factorBase[i];
+            exponents[i]++;
+        }
+    }
+
+    if (m == 1) {
+        for (int i = 0; i < exponents.size(); i++) {
+            exponents[i] = exponents[i] % 2;
+        }
+        return true;
+    }
+
+    return false;
+}
