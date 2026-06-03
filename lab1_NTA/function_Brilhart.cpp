@@ -47,7 +47,7 @@ vector<uint64_t> BuildFactorBase(uint64_t n, uint64_t B_max) {
     return base;
 }
 
-// Перевірка на гладкість
+// Перевірка на гладкістьgbn
 bool IsSmooth(uint64_t m, const vector<uint64_t>& factorBase, vector<int>& exponents) {
     exponents.assign(factorBase.size(), 0);
 
@@ -66,4 +66,52 @@ bool IsSmooth(uint64_t m, const vector<uint64_t>& factorBase, vector<int>& expon
     }
 
     return false;
+}
+
+// Ланцюгові дроби
+void ContinuedFraction(uint64_t n, const vector<uint64_t>& factorBase,
+    vector<vector<int>>& matrix,
+    vector<uint64_t>& bValues)
+{
+    uint64_t sqrtN = (uint64_t)sqrt((double)n);
+
+    uint64_t u = sqrtN;
+    uint64_t v = 1;
+    uint64_t b_prev2 = 0;
+    uint64_t b_prev1 = sqrtN;
+
+    int maxIterations = 10000;
+
+    for (int i = 1; i <= maxIterations; i++) {
+
+        uint64_t v_new = (n - u * u) / v;
+        uint64_t a = (sqrtN + u) / v_new;
+        uint64_t u_new = a * v_new - u;
+
+        uint64_t b = (a * b_prev1 + b_prev2) % n;
+
+        uint64_t value;
+        if (i % 2 == 1) {
+            value = v_new % n;
+        }
+        else {
+            value = (n - v_new % n) % n;
+        }
+
+        vector<int> exponents;
+        if (IsSmooth(value, factorBase, exponents)) {
+            exponents[0] = (i % 2 == 0) ? 1 : 0;
+            matrix.push_back(exponents);
+            bValues.push_back(b);
+        }
+
+        u = u_new;
+        v = v_new;
+        b_prev2 = b_prev1;
+        b_prev1 = b;
+
+        if (matrix.size() >= factorBase.size() + 1) {
+            break;
+        }
+    }
 }
