@@ -14,23 +14,81 @@ void logDivisor(uint64_t divisor, const string& method,
         << " | Time: " << elapsed << " ms" << endl;
 }
 
-vector<uint64_t> Factorize(uint64_t n) {
-    vector<uint64_t> result;
+void Factorize(uint64_t n, vector<uint64_t>& result,
+    const time_point<high_resolution_clock>& start)
+{
+    if (n <= 1) return;
 
-// крок 3а: перевірка на простоту
-// крок 3б: пробні ділення
-// крок 3в: Полларда
-// крок 3г: перевірка на простоту
-// крок 3д: Брілхарт-Моррісон
+    // 3a
+    if (MillerRabin(n, 20)) {
+        result.push_back(n);
+        return;
+    }
 
-    return result;
+    // 3б
+    uint64_t d = TrialDivision(n);
+    if (d != 1) {
+        logDivisor(d, "Trial Division", start);
+        Factorize(d, result, start);
+        Factorize(n / d, result, start);
+        return;
+    }
+
+    // 3в
+    d = PollardRho(n);
+    if (d != 0) {
+        logDivisor(d, "Pollard Rho", start);
+        Factorize(d, result, start);
+        Factorize(n / d, result, start);
+        return;
+    }
+
+    // 3г
+    if (MillerRabin(n, 20)) {
+        result.push_back(n);
+        return;
+    }
+
+    // 3д
+    d = BrilhartMorrison(n);
+    if (d != 0) {
+        logDivisor(d, "Brilhart-Morrison", start);
+        Factorize(d, result, start);
+        Factorize(n / d, result, start);
+        return;
+    }
+
+    cout << "Cannot find canonical decomposition :(" << endl;
 }
 
-int main() {
-    
+int main(int argc, char* argv[]) {
     uint64_t n;
-    cin >> n;
 
+    if (argc > 1) {
+        n = stoull(argv[1]);
+    }
+    else {
+        cin >> n;
+    }
+
+    auto start = high_resolution_clock::now();
+    cout << "Start: " << n << endl;
+
+    vector<uint64_t> result;
+    Factorize(n, result, start);
+
+    sort(result.begin(), result.end());
+
+    cout << "Result: ";
+    for (int i = 0; i < (int)result.size(); i++) {
+        cout << result[i];
+        if (i + 1 < (int)result.size()) cout << " * ";
+    }
+    cout << endl;
+
+    auto end = high_resolution_clock::now();
+    auto elapsed = duration_cast<milliseconds>(end - start).count();
+    cout << "Total time: " << elapsed << " ms" << endl;
 
     return 0;
 }
