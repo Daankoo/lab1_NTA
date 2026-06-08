@@ -29,6 +29,6 @@ vector<uint64_t>  BuildFactorBase(uint64_t n, uint64_t B_max);
 bool              IsSmooth(uint64_t m, const vector<uint64_t>& factorBase, vector<int>& exponents);
 
 // Brilhart.cpp
-void              ContinuedFraction(uint64_t n, const vector<uint64_t>& factorBase, vector<vector<int>>& matrix, vector<uint64_t>& bValues, vector<uint64_t>& smoothValues);
-vector<int>       SolveGF2(vector<vector<int>>& matrix, int numCols);
-uint64_t          BrilhartMorrison(uint64_t n);
+void                 ContinuedFraction(uint64_t n, const vector<uint64_t>& factorBase, vector<vector<int>>& matrix, vector<uint64_t>& bValues, vector<uint64_t>& smoothValues);
+vector<vector<int>>  SolveGF2(vector<vector<int>>& matrix, int numCols);
+uint64_t             BrilhartMorrison(uint64_t n);

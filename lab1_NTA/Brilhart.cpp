@@ -1,39 +1,35 @@
 #include "header.h"
 
 // Ланцюгові дроби
-void ContinuedFraction(uint64_t n, const vector<uint64_t>& factorBase, vector<vector<int>>& matrix, vector<uint64_t>& bValues, vector<uint64_t>& smoothValues)
+void ContinuedFraction(uint64_t n, const vector<uint64_t>& factorBase,
+    vector<vector<int>>& matrix,
+    vector<uint64_t>& bValues,
+    vector<uint64_t>& smoothValues)
 {
     uint64_t sqrtN = (uint64_t)sqrt((double)n);
 
     uint64_t u = sqrtN;
     uint64_t v = 1;
-    uint64_t b_prev2 = 0;
-    uint64_t b_prev1 = sqrtN;
+    uint64_t b_prev2 = 1;      
+    uint64_t b_prev1 = sqrtN;  
 
-    int maxIterations = 10000;
+    int maxIterations = 100000;
 
     for (int i = 1; i <= maxIterations; i++) {
 
         uint64_t v_new = (n - u * u) / v;
         uint64_t a = (sqrtN + u) / v_new;
         uint64_t u_new = a * v_new - u;
+        uint64_t b = (mul_mod(a, b_prev1, n) + b_prev2) % n;
 
-        uint64_t b = (a * b_prev1 + b_prev2) % n;
-
-        uint64_t value;
-        if (i % 2 == 1) {
-            value = v_new % n;
-        }
-        else {
-            value = (n - v_new % n) % n;
-        }
+        uint64_t value = v_new;  // завжди перевіряємо v_new
 
         vector<int> exponents;
         if (IsSmooth(value, factorBase, exponents)) {
-            exponents[0] = (i % 2 == 0) ? 1 : 0;
+            exponents[0] = (i % 2 == 1) ? 1 : 0;  // від'ємний знак для непарних i
             matrix.push_back(exponents);
-            bValues.push_back(b);
-            smoothValues.push_back(value);  
+            bValues.push_back(b_prev1);  // зберігаємо b_{i-1}
+            smoothValues.push_back(value);
         }
 
         u = u_new;
@@ -41,14 +37,14 @@ void ContinuedFraction(uint64_t n, const vector<uint64_t>& factorBase, vector<ve
         b_prev2 = b_prev1;
         b_prev1 = b;
 
-        if (matrix.size() >= factorBase.size() + 1) {
+        if (matrix.size() >= factorBase.size() + 10) {
             break;
         }
     }
 }
 
 // Пошук вектора розкладу
-vector<int> SolveGF2(vector<vector<int>>& matrix, int numCols) {
+vector<vector<int>> SolveGF2(vector<vector<int>>& matrix, int numCols) {
     int numRows = matrix.size();
 
     vector<vector<int>> aug(numRows, vector<int>(numCols + numRows, 0));
@@ -61,7 +57,6 @@ vector<int> SolveGF2(vector<vector<int>>& matrix, int numCols) {
 
     int row = 0;
     for (int col = 0; col < numCols && row < numRows; col++) {
-
         int pivot = -1;
         for (int i = row; i < numRows; i++) {
             if (aug[i][col] == 1) {
@@ -83,6 +78,7 @@ vector<int> SolveGF2(vector<vector<int>>& matrix, int numCols) {
         row++;
     }
 
+    vector<vector<int>> solutions;
     for (int i = 0; i < numRows; i++) {
         bool isZero = true;
         for (int j = 0; j < numCols; j++) {
@@ -96,11 +92,11 @@ vector<int> SolveGF2(vector<vector<int>>& matrix, int numCols) {
             for (int j = 0; j < numRows; j++) {
                 solution[j] = aug[i][numCols + j];
             }
-            return solution;
+            solutions.push_back(solution);
         }
     }
 
-    return {};
+    return solutions;
 }
 
 // Бріхарта-Моріс
@@ -120,49 +116,51 @@ uint64_t BrilhartMorrison(uint64_t n) {
 
     if (matrix.empty()) return 0;
 
-    vector<int> solution = SolveGF2(matrix, factorBase.size());
+    vector<vector<int>> solutions = SolveGF2(matrix, factorBase.size());
 
-    if (solution.empty()) return 0;
+    if (solutions.empty()) return 0;
 
-    uint64_t X = 1;
-    vector<int> realExp(factorBase.size(), 0);
+    for (const auto& solution : solutions) {
+        uint64_t X = 1;
+        vector<int> realExp(factorBase.size(), 0);
 
-    for (int i = 0; i < (int)solution.size(); i++) {
-        if (solution[i] == 1) {
-            X = mul_mod(X, bValues[i], n);
-            realExp[0] += matrix[i][0];
-            uint64_t temp = smoothValues[i];
-            for (int j = 1; j < (int)factorBase.size(); j++) {
-                while (temp % factorBase[j] == 0) {
-                    temp /= factorBase[j];
-                    realExp[j]++;
+        for (int i = 0; i < (int)solution.size(); i++) {
+            if (solution[i] == 1) {
+                X = mul_mod(X, bValues[i], n);
+                realExp[0] += matrix[i][0];
+                uint64_t temp = smoothValues[i];
+                for (int j = 1; j < (int)factorBase.size(); j++) {
+                    while (temp % factorBase[j] == 0) {
+                        temp /= factorBase[j];
+                        realExp[j]++;
+                    }
                 }
             }
         }
-    }
 
-    uint64_t Y = 1;
-    for (int j = 1; j < (int)factorBase.size(); j++) {
-        int power = realExp[j] / 2;
-        for (int k = 0; k < power; k++) {
-            Y = mul_mod(Y, factorBase[j], n);
+        uint64_t Y = 1;
+        for (int j = 1; j < (int)factorBase.size(); j++) {
+            int power = realExp[j] / 2;
+            for (int k = 0; k < power; k++) {
+                Y = mul_mod(Y, factorBase[j], n);
+            }
         }
+
+        if ((realExp[0] / 2) % 2 == 1) {
+            Y = (n - Y) % n;
+        }
+
+        if (X == Y || X == (n - Y) % n) continue;
+
+        uint64_t sum = (X + Y) % n;
+        uint64_t diff = (X + n - Y) % n;
+
+        uint64_t d1 = gcd(sum, n);
+        uint64_t d2 = gcd(diff, n);
+
+        if (d1 != 1 && d1 != n) return d1;
+        if (d2 != 1 && d2 != n) return d2;
     }
-
-    if ((realExp[0] / 2) % 2 == 1) {
-        Y = (n - Y) % n;
-    }
-
-    if (X == Y || X == (n - Y) % n) return 0;
-
-    uint64_t sum = (X + Y) % n;
-    uint64_t diff = (X + n - Y) % n;
-
-    uint64_t d1 = gcd(sum, n);
-    uint64_t d2 = gcd(diff, n);
-
-    if (d1 != 1 && d1 != n) return d1;
-    if (d2 != 1 && d2 != n) return d2;
 
     return 0;
 }
