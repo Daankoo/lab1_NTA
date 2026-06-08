@@ -1,9 +1,17 @@
 #include "header.h"
 #include <chrono>
 
+using namespace chrono;
 
-void logDivisor(uint64_t divisor, const string& method) {
+void logDivisor(uint64_t divisor, const string& method,
+    const time_point<high_resolution_clock>& start)
+{
+    auto now = high_resolution_clock::now();
+    auto elapsed = duration_cast<milliseconds>(now - start).count();
 
+    cout << "Divisor: " << divisor
+        << " | Method: " << method
+        << " | Time: " << elapsed << " ms" << endl;
 }
 
 vector<uint64_t> Factorize(uint64_t n) {
