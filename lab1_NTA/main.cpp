@@ -19,7 +19,7 @@ void Factorize(uint64_t n, vector<uint64_t>& result,
 {
     if (n <= 1) return;
 
-    // 3a
+    // 3à
     if (MillerRabin(n, 20)) {
         result.push_back(n);
         return;
@@ -29,8 +29,8 @@ void Factorize(uint64_t n, vector<uint64_t>& result,
     uint64_t d = TrialDivision(n);
     if (d != 1) {
         logDivisor(d, "Trial Division", start);
-        Factorize(d, result, start);
-        Factorize(n / d, result, start);
+        result.push_back(d);
+        Factorize(n / d, result, start); 
         return;
     }
 
@@ -38,24 +38,32 @@ void Factorize(uint64_t n, vector<uint64_t>& result,
     d = PollardRho(n);
     if (d != 0) {
         logDivisor(d, "Pollard Rho", start);
-        Factorize(d, result, start);
-        Factorize(n / d, result, start);
-        return;
-    }
-
-    // 3ã
-    if (MillerRabin(n, 20)) {
-        result.push_back(n);
-        return;
+        result.push_back(d);
+        n = n / d;
+        
+        // 3ã
+        if (MillerRabin(n, 20)) {
+            result.push_back(n);
+            return;
+        }
     }
 
     // 3ä
-    d = BrilhartMorrison(n);
-    if (d != 0) {
+    while (true) {
+        d = BrilhartMorrison(n);
+        if (d == 0) {
+            cout << "Cannot find canonical decomposition :(" << endl;
+            return;
+        }
         logDivisor(d, "Brilhart-Morrison", start);
-        Factorize(d, result, start);
-        Factorize(n / d, result, start);
-        return;
+        result.push_back(d);
+        n = n / d;
+
+        // 3ã
+        if (MillerRabin(n, 20)) {
+            result.push_back(n);
+            return;
+        }
     }
 
     cout << "Cannot find canonical decomposition :(" << endl;
