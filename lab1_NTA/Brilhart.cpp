@@ -18,6 +18,7 @@ void ContinuedFraction(uint64_t n, const vector<uint64_t>& factorBase,
     for (int i = 1; i <= maxIterations; i++) {
 
         uint64_t v_new = (n - u * u) / v;
+        if (v_new == 0) break;  // захист від ділення на нуль
         uint64_t a = (sqrtN + u) / v_new;
         uint64_t u_new = a * v_new - u;
         uint64_t b = (mul_mod(a, b_prev1, n) + b_prev2) % n;

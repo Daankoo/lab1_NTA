@@ -30,7 +30,7 @@ void Factorize(uint64_t n, vector<uint64_t>& result,
     if (d != 1) {
         logDivisor(d, "Trial Division", start);
         result.push_back(d);
-        Factorize(n / d, result, start); 
+        Factorize(n / d, result, start);
         return;
     }
 
@@ -40,7 +40,7 @@ void Factorize(uint64_t n, vector<uint64_t>& result,
         logDivisor(d, "Pollard Rho", start);
         result.push_back(d);
         n = n / d;
-        
+
         // 3ã
         if (MillerRabin(n, 20)) {
             result.push_back(n);
@@ -70,16 +70,34 @@ void Factorize(uint64_t n, vector<uint64_t>& result,
 }
 
 int main(int argc, char* argv[]) {
-    uint64_t n;
+    if (argc < 2) {
+        cin.ignore();
+        return 1;
+    }
 
-    if (argc > 1) {
-        n = stoull(argv[1]);
-    }
-    else {
-        cin >> n;
-    }
+    uint64_t n = stoull(argv[1]);
+    string mode = (argc > 2) ? argv[2] : "";
 
     auto start = high_resolution_clock::now();
+
+    if (mode == "--pollard") {
+        cout << "Start: " << n << " | Mode: Pollard Rho" << endl;
+        uint64_t d = PollardRho(n);
+        auto elapsed = duration_cast<milliseconds>(
+            high_resolution_clock::now() - start).count();
+        cout << "Divisor: " << d << " | Time: " << elapsed << " ms" << endl;
+        return 0;
+    }
+
+    if (mode == "--cfrac") {
+        cout << "Start: " << n << " | Mode: Brilhart-Morrison" << endl;
+        uint64_t d = BrilhartMorrison(n);
+        auto elapsed = duration_cast<milliseconds>(
+            high_resolution_clock::now() - start).count();
+        cout << "Divisor: " << d << " | Time: " << elapsed << " ms" << endl;
+        return 0;
+    }
+
     cout << "Start: " << n << endl;
 
     vector<uint64_t> result;
