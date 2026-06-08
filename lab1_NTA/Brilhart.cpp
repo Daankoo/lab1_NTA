@@ -37,7 +37,7 @@ void ContinuedFraction(uint64_t n, const vector<uint64_t>& factorBase,
         b_prev2 = b_prev1;
         b_prev1 = b;
 
-        if (matrix.size() >= factorBase.size() + 10) {
+        if (matrix.size() >= factorBase.size() + 25) {
             break;
         }
     }
@@ -105,6 +105,10 @@ uint64_t BrilhartMorrison(uint64_t n) {
     double logN = log((double)n);
     double L = exp(sqrt(logN * log(logN)));
     uint64_t B_max = (uint64_t)pow(L, 1.0 / sqrt(2.0));
+
+    if (B_max < 300) {
+        B_max = 300;
+    }
 
     vector<uint64_t> factorBase = BuildFactorBase(n, B_max);
 
