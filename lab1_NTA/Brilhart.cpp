@@ -13,7 +13,7 @@ void ContinuedFraction(uint64_t n, const vector<uint64_t>& factorBase,
     uint64_t b_prev2 = 1;      
     uint64_t b_prev1 = sqrtN;  
 
-    int maxIterations = 200000;
+    int maxIterations = 1000000;
 
     for (int i = 1; i <= maxIterations; i++) {
 
