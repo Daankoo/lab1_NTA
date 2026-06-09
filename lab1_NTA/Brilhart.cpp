@@ -6,7 +6,7 @@ void ContinuedFraction(uint64_t n, const vector<uint64_t>& factorBase,
     vector<uint64_t>& bValues,
     vector<uint64_t>& smoothValues)
 {
-    uint64_t sqrtN = (uint64_t)sqrt((double)n);
+    uint64_t sqrtN = (uint64_t)sqrt((long double)n);
 
     uint64_t u = sqrtN;
     uint64_t v = 1;
